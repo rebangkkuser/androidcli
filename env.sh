@@ -11,6 +11,9 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 DIR=/data/local/androcli
+GREEN="\033[32m"
+BLUE="\033[34m"
+RESET="\033[0m"
 mkdir -p $DIR
 mkdir -p $DIR/system
 mkdir -p $DIR/vendor
@@ -21,6 +24,7 @@ ln -sf ./system/bin $DIR/bin
 mkdir -p $DIR/vendor/bin
 mkdir -p $DIR/system/xbin
 ln -sf ./system/xbin $DIR/xbin
+mkdir -p $DIR/linkerconfig
 mkdir -p $DIR/vendor/xbin
 mkdir -p $DIR/dev
 mkdir -p $DIR/proc
@@ -41,11 +45,29 @@ cd - > /dev/null
 mount --bind /dev $DIR/dev
 mount --bind /proc $DIR/proc
 mount --bind /sys $DIR/sys
-# Copying libc.so and libdl.so for /system/bin/sh and /vendor/bin/sh (works only with APEX devices)
+# Copying Bionic for /system/bin/sh and /vendor/bin/sh (works only with APEX devices)
 cp /apex/com.android.runtime/lib64/bionic/libc.so $DIR/system/lib64/libc.so
 cp /apex/com.android.runtime/lib64/bionic/libdl.so $DIR/system/lib64/libdl.so
+cp /apex/com.android.runtime/lib64/bionic/libm.so $DIR/system/lib64
 # Copying shells
 cp /system/bin/sh $DIR/system/bin/sh
 cp /vendor/bin/sh $DIR/vendor/bin/sh
+# Copying libs and linkerconfig
+cp /system/lib64/libc++.so $DIR/system/lib64/libc++.so
+cp /system/lib64/libz.so $DIR/system/lib64/libz.so
+cp /system/lib64/libselinux.so $DIR/system/lib64/libselinux.so
+cp /system/lib64/libpackagelistparser.so $DIR/system/lib64/libpackagelistparser.so
+cp /system/lib64/libpcre2.so $DIR/system/lib64/libpcre2.so
+cp /system/lib64/liblog.so $DIR/system/lib64/liblog.so
+cp /system/lib64/libcrypto.so $DIR/system/lib64/libcrypto.so
+cp /vendor/lib64/libc++.so $DIR/vendor/lib64/libc++.so
+cp /vendor/lib64/libz.so $DIR/vendor/lib64/libz.so
+cp /vendor/lib64/libselinux.so $DIR/vendor/lib64/libselinux.so
+cp /vendor/lib64/libpackagelistparser.so $DIR/vendor/lib64/libpackagelistparser.so
+cp /vendor/lib64/libpcre2.so $DIR/vendor/lib64/libpcre2.so
+cp /vendor/lib64/liblog.so $DIR/vendor/lib64/liblog.so
+cp /vendor/lib64/libcrypto.so $DIR/vendor/lib64/libcrypto.so
+cp /linkerconfig/ld.config.txt $DIR/linkerconfig/ld.config.txt
 # Extra binaries
 cp "$(command -v ldd)" $DIR/system/xbin/ldd
+echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
