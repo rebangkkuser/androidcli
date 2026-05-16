@@ -9,11 +9,19 @@
 if [ "$(id -u)" -ne 0 ]; then
     exec su -c "$0" "$@"
 fi
-
+clear
 DIR=/data/local/androcli
 GREEN="\033[32m"
 BLUE="\033[34m"
 RESET="\033[0m"
+echo -e "${GREEN}                 _           _     _            _ _
+  __ _ _ __   __| |_ __ ___ (_) __| |       ___| (_)
+ / _` | '_ \ / _` | '__/ _ \| |/ _` |_____ / __| | |
+| (_| | | | | (_| | | | (_) | | (_| |_____| (__| | |
+ \__,_|_| |_|\__,_|_|  \___/|_|\__,_|      \___|_|_|
+ ${RESET}"
+ echo "Installer v0.1 alpha"
+ echo -e "${BLUE}[*]${RESET} Starting install..."
 mkdir -p $DIR
 mkdir -p $DIR/system
 mkdir -p $DIR/vendor
@@ -71,7 +79,6 @@ cp /vendor/lib64/libcrypto.so $DIR/vendor/lib64/libcrypto.so
 cp /linkerconfig/ld.config.txt $DIR/linkerconfig/ld.config.txt
 # Extra binaries
 cp "$(command -v ldd)" $DIR/system/xbin/ldd
-echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
 # Build properties
 echo "# begin build properties
 # made by bangkkuser
@@ -103,3 +110,4 @@ echo "ro.secure=0
 ro.debuggable=1
 persist.sys.usb.config=adb" > $DIR/default.prop
 
+echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)
