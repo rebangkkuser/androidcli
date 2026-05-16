@@ -38,7 +38,7 @@ for cmd in $(./toybox); do ln -sf "./toybox" "$cmd"; done
 cd $DIR/vendor/bin
 for cmd in $(./toybox_vendor); do ln -sf "./toybox_vendor" "$cmd"; done
 
-# Voltar para a raiz do script
+# Back to script root
 cd - > /dev/null
 
 # Making bind mounts
