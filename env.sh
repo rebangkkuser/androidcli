@@ -31,7 +31,7 @@ cp /system/bin/linker $DIR/system/bin/linker
 # Cloning vendor toybox
 cp /vendor/bin/toybox_vendor $DIR/vendor/bin/toybox_vendor
 
-# Installing toybox (es) - CORRIGIDO: Entrando na pasta e linkando localmente
+# Installing toybox (es) - FIXED:entering folder and cloning locally
 cd $DIR/system/bin
 for cmd in $(./toybox); do ln -sf "./toybox" "$cmd"; done
 
