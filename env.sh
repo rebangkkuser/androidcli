@@ -19,6 +19,7 @@ mkdir -p $DIR/system
 mkdir -p $DIR/vendor
 ln -sf ./vendor $DIR/system/vendor
 mkdir -p $DIR/system/lib64
+mkdir -p $DIR/vendor/lib64
 mkdir -p $DIR/system/bin
 ln -sf ./system/bin $DIR/bin
 mkdir -p $DIR/vendor/bin
@@ -48,7 +49,7 @@ mount --bind /sys $DIR/sys
 # Copying Bionic for /system/bin/sh and /vendor/bin/sh (works only with APEX devices)
 cp /apex/com.android.runtime/lib64/bionic/libc.so $DIR/system/lib64/libc.so
 cp /apex/com.android.runtime/lib64/bionic/libdl.so $DIR/system/lib64/libdl.so
-cp /apex/com.android.runtime/lib64/bionic/libm.so $DIR/system/lib64
+cp /apex/com.android.runtime/lib64/bionic/libm.so $DIR/system/lib64/libm.so
 # Copying shells
 cp /system/bin/sh $DIR/system/bin/sh
 cp /vendor/bin/sh $DIR/vendor/bin/sh
@@ -71,3 +72,34 @@ cp /linkerconfig/ld.config.txt $DIR/linkerconfig/ld.config.txt
 # Extra binaries
 cp "$(command -v ldd)" $DIR/system/xbin/ldd
 echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
+# Build properties
+echo "# begin build properties
+# made by bangkkuser
+
+ro.product.model=generic_cli
+ro.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/m4a7p:eng/test-keys
+ro.cli.home=/root
+ro.build.version.sdk=3
+ro.build.version.release=1.5-acli
+ro.build.id=CUMN.261605.000
+ro.build.type=eng
+ro.build.tags=test-keys
+ro.github=rebangkkuser/androcli" > $DIR/system/build.prop
+
+echo "# begin vendor build properties
+# made by bangkkuser
+
+ro.vendor.product.model=generic_cli
+ro.vendor.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/m4a7p:eng/test-keys
+ro.vendor.cli.home=/root
+ro.vendor.build.version.sdk=3
+ro.vendor.build.version.release=1.5-acli
+ro.vendor.build.id=CUMN.261605.000
+ro.vendor.build.type=eng
+ro.vendor.build.tags=test-keys
+ro.vendor.github=rebangkkuser/androcli" > $DIR/vendor/build.prop
+
+echo "ro.secure=0
+ro.debuggable=1
+persist.sys.usb.config=adb" > $DIR/default.prop
+
