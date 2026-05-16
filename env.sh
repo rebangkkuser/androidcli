@@ -14,12 +14,16 @@ DIR=/data/local/androcli
 GREEN="\033[32m"
 BLUE="\033[34m"
 RESET="\033[0m"
-echo -e "${GREEN}                 _           _     _            _ _
+cat <<EOF
+${GREEN}
+                 _           _     _            _ _
   __ _ _ __   __| |_ __ ___ (_) __| |       ___| (_)
  / _` | '_ \ / _` | '__/ _ \| |/ _` |_____ / __| | |
 | (_| | | | | (_| | | | (_) | | (_| |_____| (__| | |
  \__,_|_| |_|\__,_|_|  \___/|_|\__,_|      \___|_|_|
- ${RESET}"
+
+${RESET}
+EOF
  echo "Installer v0.1 alpha"
  echo -e "${BLUE}[*]${RESET} Starting install..."
 mkdir -p $DIR
