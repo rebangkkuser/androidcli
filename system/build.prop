@@ -1,0 +1,12 @@
+# begin build properties
+# made by bangkkuser
+
+ro.product.model=generic_cli
+ro.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/m4a7p:eng/test-keys
+ro.cli.home=/root
+ro.build.version.sdk=3
+ro.build.version.release=1.5-acli
+ro.build.id=CUMN.261605.000
+ro.build.type=eng
+ro.build.tags=test-keys
+ro.github=rebangkkuser/androcli
