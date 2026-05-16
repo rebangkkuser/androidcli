@@ -110,4 +110,4 @@ echo "ro.secure=0
 ro.debuggable=1
 persist.sys.usb.config=adb" > $DIR/default.prop
 
-echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)
+echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
