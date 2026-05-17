@@ -115,4 +115,42 @@ echo "ro.secure=0
 ro.debuggable=1
 persist.sys.usb.config=adb" > $DIR/default.prop
 
+echo "#!/system/bin/sh
+
+APP_BASE="/root/app"
+
+cmd="$1"
+name="$2"
+
+APP_DIR="$APP_BASE/$name"
+APP_FILE="$APP_DIR/app.acli"
+
+case "$cmd" in
+  run)
+    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
+    sh "$APP_FILE"
+  ;;
+
+  info)
+    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
+    echo "Name: $name"
+    echo "Path: $APP_BASE/$name"
+    head -n 20 "$APP_FILE"
+  ;;
+
+  list)
+    ls "$APP_BASE"
+  ;;
+
+  uninstall)
+    [ ! -d "$APP_DIR" ] && echo "App not found" && exit 1
+    rm -rf "$APP_DIR"
+    echo "Removed $name"
+  ;;
+
+  *)
+    echo "Usage: clim {run|info|list|uninstall}"
+  ;;
+esac" > $DIR/vendor/bim/clim
+
 echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
