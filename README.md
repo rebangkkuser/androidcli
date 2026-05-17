@@ -1,5 +1,5 @@
 # androidcli (or androcli)
-![banner](https://raw.githubusercontent.com/rebangkkuser/androidcli/refs/heads/main/assets/androcli.jpg)
+![banner](https://raw.githubusercontent.com/rebangkkuser/androidcli/refs/heads/main/assets/androidcli.png)
 
 androidcli is Android on CLI, running on chroot ambients, with a rootfs structure.
 ## Installing
