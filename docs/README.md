@@ -25,4 +25,4 @@ chroot /data/local/androcli /system/bin/sh
 '
 ```
 ## Pages
-[Wiki]()
+[Wiki](https://rebangkkuser.github.io/androidcli/Wiki)
