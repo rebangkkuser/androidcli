@@ -24,7 +24,8 @@ ${GREEN}
 
 ${RESET}
 EOF
- echo "Installer v0.1 alpha"
+ echo "Installer v0.1 alpha 2"
+ echo "see fixes on
  echo -e "${BLUE}[*]${RESET} Starting install..."
 mkdir -p $DIR
 mkdir -p $DIR/system
@@ -50,9 +51,9 @@ cp /system/bin/linker $DIR/system/bin/linker
 cp /vendor/bin/toybox_vendor $DIR/vendor/bin/toybox_vendor
 # Installing toybox (es)
 cd $DIR/system/bin || exit 1
-for cmd in $(./toybox); do ln -sf "./toybox" "$cmd"; done
+for cmd in $($DIR/system/bin/toybox); do ln -sf "$DIR/system/bin/toybox" "$cmd"; done
 cd $DIR/vendor/bin || exit 1
-for cmd in $(./toybox_vendor); do ln -sf "./toybox_vendor" "$cmd"; done
+for cmd in $($DIR/vendor/bin/toybox_vendor); do ln -sf "$DIR/vendor/bin/toybox_vendor" "$cmd"; done
 cd - > /dev/null
 # Making bind mounts
 mount --bind /dev $DIR/dev
