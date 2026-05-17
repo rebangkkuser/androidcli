@@ -30,14 +30,14 @@ EOF
 mkdir -p $DIR
 mkdir -p $DIR/system
 mkdir -p $DIR/vendor
-ln -sf ./vendor $DIR/system/vendor
+ln -sf $DIR/vendor $DIR/system/vendor
 mkdir -p $DIR/system/lib64
 mkdir -p $DIR/vendor/lib64
 mkdir -p $DIR/system/bin
-ln -sf ./system/bin $DIR/bin
+ln -sf $DIR/system/bin $DIR/bin
 mkdir -p $DIR/vendor/bin
 mkdir -p $DIR/system/xbin
-ln -sf ./system/xbin $DIR/xbin
+ln -sf $DIR/system/xbin $DIR/xbin
 mkdir -p $DIR/linkerconfig
 mkdir -p $DIR/vendor/xbin
 mkdir -p $DIR/dev
@@ -151,6 +151,6 @@ case "$cmd" in
   *)
     echo "Usage: clim {run|info|list|uninstall}"
   ;;
-esac" > $DIR/vendor/bim/clim
+esac" > $DIR/vendor/bin/clim
 
 echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
