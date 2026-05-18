@@ -19,3 +19,13 @@ Start with
 ```sh
 ./acli
 ```
+## Important
+Supports only Android 10 (SDK 29) or superior. If you want to port on SDK 28-, open a Issue or a Pull request.
+---
+* Disclaimer 
+* We not responsible for bricked devices, dead SD cards, thermonuclear war, 
+* or you getting fired because the alarm app failed. Please do some research 
+* if you have any concerns about features included in this ROM
+* before flashing it! YOU are choosing to make these modifications, and if
+* you blame us in any way for what happens to your device, we will laugh at you.
+* BOOM! goes the dynamite
