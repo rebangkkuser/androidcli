@@ -24,7 +24,7 @@ ${GREEN}
 
 ${RESET}
 EOF
- echo "Installer v0.1 alpha 2"
+ echo "Installer v0.2.0 alpha 1"
  echo "see fixes on
  echo -e "${BLUE}[*]${RESET} Starting install..."
 mkdir -p $DIR
@@ -74,6 +74,7 @@ cp /system/lib64/libpackagelistparser.so $DIR/system/lib64/libpackagelistparser.
 cp /system/lib64/libpcre2.so $DIR/system/lib64/libpcre2.so
 cp /system/lib64/liblog.so $DIR/system/lib64/liblog.so
 cp /system/lib64/libcrypto.so $DIR/system/lib64/libcrypto.so
+cp /system/lib64/libcurl.so $DIR/system/lib64/libcurl.so
 cp /vendor/lib64/libc++.so $DIR/vendor/lib64/libc++.so
 cp /vendor/lib64/libz.so $DIR/vendor/lib64/libz.so
 cp /vendor/lib64/libselinux.so $DIR/vendor/lib64/libselinux.so
@@ -84,16 +85,18 @@ cp /vendor/lib64/libcrypto.so $DIR/vendor/lib64/libcrypto.so
 cp /linkerconfig/ld.config.txt $DIR/linkerconfig/ld.config.txt
 # Extra binaries
 cp "$(command -v ldd)" $DIR/system/xbin/ldd
+cp /system/bin/curl $DIR/system/xbin/curl 2>/dev/null || cp /system/xbin/curl $DIR/system/xbin/curl 2>/dev/null || cp /vendor/bin/curl $DIR/vendor/bin/curl 2>/dev/null || cp /vendor/xbin/curl $DIR/vendor/xbin/curl
 # Build properties
 echo "# begin build properties
 # made by bangkkuser
 
 ro.product.model=generic_cli
-ro.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/m4a7p:eng/test-keys
+ro.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/7b7x3:eng/test-keys
 ro.cli.home=/root
-ro.build.version.sdk=3
-ro.build.version.release=1.5-acli
-ro.build.id=CUMN.261605.000
+ro.build.version.sdk=1
+ro.build.version.release=lavacup
+ro.build.id=CUMN.261605.001
+ro.build.codename=Lavacup (lavacup)
 ro.build.type=eng
 ro.build.tags=test-keys
 ro.github=rebangkkuser/androcli" > $DIR/system/build.prop
@@ -102,11 +105,12 @@ echo "# begin vendor build properties
 # made by bangkkuser
 
 ro.vendor.product.model=generic_cli
-ro.vendor.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/m4a7p:eng/test-keys
+ro.vendor.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.001/7b7x3:eng/test-keys
 ro.vendor.cli.home=/root
-ro.vendor.build.version.sdk=3
-ro.vendor.build.version.release=1.5-acli
-ro.vendor.build.id=CUMN.261605.000
+ro.vendor.build.version.sdk=1
+ro.vendor.build.version.release=lavacup
+ro.vendor.build.id=CUMN.261605.001
+firstrel=1.5-acli
 ro.vendor.build.type=eng
 ro.vendor.build.tags=test-keys
 ro.vendor.github=rebangkkuser/androcli" > $DIR/vendor/build.prop
@@ -114,43 +118,5 @@ ro.vendor.github=rebangkkuser/androcli" > $DIR/vendor/build.prop
 echo "ro.secure=0
 ro.debuggable=1
 persist.sys.usb.config=adb" > $DIR/default.prop
-
-echo "#!/system/bin/sh
-
-APP_BASE="/root/app"
-
-cmd="$1"
-name="$2"
-
-APP_DIR="$APP_BASE/$name"
-APP_FILE="$APP_DIR/app.acli"
-
-case "$cmd" in
-  run)
-    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
-    sh "$APP_FILE"
-  ;;
-
-  info)
-    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
-    echo "Name: $name"
-    echo "Path: $APP_BASE/$name"
-    head -n 20 "$APP_FILE"
-  ;;
-
-  list)
-    ls "$APP_BASE"
-  ;;
-
-  uninstall)
-    [ ! -d "$APP_DIR" ] && echo "App not found" && exit 1
-    rm -rf "$APP_DIR"
-    echo "Removed $name"
-  ;;
-
-  *)
-    echo "Usage: clim {run|info|list|uninstall}"
-  ;;
-esac" > $DIR/vendor/bin/clim
 
 echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
