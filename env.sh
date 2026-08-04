@@ -1,129 +1,181 @@
 #!/system/bin/sh
 
-# Copyright (c) 2026 rebangkkuser.
-# All rights reserved
-#
-# This project is licensed under the GNU General Public License (GPL), version 3
+set -eu
 
-# RootFS structutre
 if [ "$(id -u)" -ne 0 ]; then
     exec su -c "$0" "$@"
 fi
+
 clear
-DIR=/data/local/androcli
+
+DIR="/data/local/androcli"
+
 GREEN="\033[32m"
 BLUE="\033[34m"
 RESET="\033[0m"
-cat <<EOF
-${GREEN}
-                 _           _     _            _ _
-  __ _ _ __   __| |_ __ ___ (_) __| |       ___| (_)
- / _` | '_ \ / _` | '__/ _ \| |/ _` |_____ / __| | |
-| (_| | | | | (_| | | | (_) | | (_| |_____| (__| | |
- \__,_|_| |_|\__,_|_|  \___/|_|\__,_|      \___|_|_|
 
-${RESET}
+printf "${GREEN}"
+
+if command -v figlet >/dev/null 2>&1; then
+    figlet androidcli
+else
+cat <<'EOF'
+       _           _     _      _ _
+  __ _ _ __   __| |_ __ ___ (_) __| | ___| (_)
+ / _` | '_ \ / _` | '__/ _ \| |/ _` |/ __| | |
+| (_| | | | | (_| | | | (_) | | (_| | (__| | |
+ \__,_|_| |_|\__,_|_|  \___/|_|\__,_|\___|_|_|
 EOF
- echo "Installer v0.2.0 alpha 1"
- echo "github.com/rebangkkuser/androidcli
- echo -e "${BLUE}[*]${RESET} Starting install..."
-mkdir -p $DIR
-mkdir -p $DIR/apex
-mkdir -p $DIR/system
-mkdir -p $DIR/vendor
-ln -sf $DIR/vendor $DIR/system/vendor
-mkdir -p $DIR/system/lib64
-mkdir -p $DIR/vendor/lib64
-mkdir -p $DIR/system/bin
-mkdir -p $DIR/system/apex
-ln -sf $DIR/system/bin $DIR/bin
-mkdir -p $DIR/vendor/bin
-mkdir -p $DIR/vendor/apex
-mkdir -p $DIR/system/xbin
-ln -sf $DIR/system/xbin $DIR/xbin
-mkdir -p $DIR/linkerconfig
-mkdir -p $DIR/vendor/xbin
-mkdir -p $DIR/dev
-mkdir -p $DIR/proc
-mkdir -p $DIR/sys
-mkdir -p $DIR/data
-mkdir -p $DIR/data/local
-mkdir -p $DIR/data/local/androcli
-mount --rbind $DIR $DIR/data/local/androcli
-# Cloning system toybox and linkers
-cp /system/bin/toybox $DIR/system/bin/toybox
-cp /system/bin/linker64 $DIR/system/bin/linker64
-cp /system/bin/linker $DIR/system/bin/linker
-# Cloning vendor toybox
-cp /vendor/bin/toybox_vendor $DIR/vendor/bin/toybox_vendor
-# Installing toybox (es)
-cd $DIR/system/bin || exit 1
-for cmd in $($DIR/system/bin/toybox); do ln -sf "$DIR/system/bin/toybox" "$cmd"; done
-cd $DIR/vendor/bin || exit 1
-for cmd in $($DIR/vendor/bin/toybox_vendor); do ln -sf "$DIR/vendor/bin/toybox_vendor" "$cmd"; done
-cd - > /dev/null
-# Making bind mounts
-mount --bind /dev $DIR/dev
-mount --bind /proc $DIR/proc
-mount --bind /sys $DIR/sys
-# Copying Bionic for /system/bin/sh and /vendor/bin/sh (works only with APEX devices)
-cp /apex/com.android.runtime/lib64/bionic/libc.so $DIR/system/lib64/libc.so
-cp /apex/com.android.runtime/lib64/bionic/libdl.so $DIR/system/lib64/libdl.so
-cp /apex/com.android.runtime/lib64/bionic/libm.so $DIR/system/lib64/libm.so
-# Copying shells
-cp /system/bin/sh $DIR/system/bin/sh
-cp /vendor/bin/sh $DIR/vendor/bin/sh
-# Copying libs and linkerconfig
-cp /system/lib64/libc++.so $DIR/system/lib64/libc++.so
-cp /system/lib64/libz.so $DIR/system/lib64/libz.so
-cp /system/lib64/libselinux.so $DIR/system/lib64/libselinux.so
-cp /system/lib64/libpackagelistparser.so $DIR/system/lib64/libpackagelistparser.so
-cp /system/lib64/libpcre2.so $DIR/system/lib64/libpcre2.so
-cp /system/lib64/liblog.so $DIR/system/lib64/liblog.so
-cp /system/lib64/libcrypto.so $DIR/system/lib64/libcrypto.so
-cp /system/lib64/libcurl.so $DIR/system/lib64/libcurl.so
-cp /vendor/lib64/libc++.so $DIR/vendor/lib64/libc++.so
-cp /vendor/lib64/libz.so $DIR/vendor/lib64/libz.so
-cp /vendor/lib64/libselinux.so $DIR/vendor/lib64/libselinux.so
-cp /vendor/lib64/libpackagelistparser.so $DIR/vendor/lib64/libpackagelistparser.so
-cp /vendor/lib64/libpcre2.so $DIR/vendor/lib64/libpcre2.so
-cp /vendor/lib64/liblog.so $DIR/vendor/lib64/liblog.so
-cp /vendor/lib64/libcrypto.so $DIR/vendor/lib64/libcrypto.so
-cp /linkerconfig/ld.config.txt $DIR/linkerconfig/ld.config.txt
-# Extra binaries
-cp "$(command -v ldd)" $DIR/system/xbin/ldd
-cp /system/bin/curl $DIR/system/xbin/curl 2>/dev/null || cp /system/xbin/curl $DIR/system/xbin/curl 2>/dev/null || cp /vendor/bin/curl $DIR/vendor/bin/curl 2>/dev/null || cp /vendor/xbin/curl $DIR/vendor/xbin/curl
-# Build properties
-echo "# begin build properties
-# made by bangkkuser
+fi
 
+printf "${RESET}"
+
+echo "AndroidCLI Installer v0.2.0 alpha 2"
+echo "github.com/rebangkkuser/androidcli"
+echo
+
+echo -e "${BLUE}[*]${RESET} Checking environment..."
+
+SDK="$(getprop ro.build.version.sdk)"
+
+if [ "$SDK" -lt 29 ]; then
+    echo "[-] Android 10 or newer is required."
+    exit 1
+fi
+
+if [ ! -d "/apex/com.android.runtime" ]; then
+    echo "[-] APEX runtime was not found."
+    exit 1
+fi
+
+echo -e "${GREEN}[+]${RESET} Android SDK: $SDK"
+echo -e "${GREEN}[+]${RESET} APEX runtime detected"
+
+echo -e "${BLUE}[*]${RESET} Creating filesystem..."
+
+mkdir -p \
+"$DIR/system/bin" \
+"$DIR/system/xbin" \
+"$DIR/system/lib64" \
+"$DIR/system/apex" \
+"$DIR/vendor/bin" \
+"$DIR/vendor/xbin" \
+"$DIR/vendor/lib64" \
+"$DIR/vendor/apex" \
+"$DIR/apex" \
+"$DIR/dev" \
+"$DIR/proc" \
+"$DIR/sys" \
+"$DIR/linkerconfig"
+
+
+ln -sfn "$DIR/vendor" "$DIR/system/vendor"
+ln -sfn "$DIR/system/bin" "$DIR/bin"
+ln -sfn "$DIR/system/xbin" "$DIR/xbin"
+
+
+echo -e "${BLUE}[*]${RESET} Installing APEX runtime..."
+
+cp -a "/apex/com.android.runtime" "$DIR/apex/"
+
+
+echo -e "${BLUE}[*]${RESET} Installing system binaries..."
+
+for binary in \
+toybox \
+linker \
+linker64 \
+sh
+do
+    if [ -f "/system/bin/$binary" ]; then
+        cp "/system/bin/$binary" "$DIR/system/bin/$binary"
+    fi
+done
+
+
+echo -e "${BLUE}[*]${RESET} Installing toybox..."
+
+cd "$DIR/system/bin"
+
+if [ -f toybox ]; then
+    for cmd in $(./toybox); do
+        ln -sf toybox "$cmd"
+    done
+fi
+
+cd /
+
+
+echo -e "${BLUE}[*]${RESET} Installing vendor tools..."
+
+if [ -f "/vendor/bin/toybox_vendor" ]; then
+
+    cp "/vendor/bin/toybox_vendor" \
+    "$DIR/vendor/bin/toybox_vendor"
+
+    cd "$DIR/vendor/bin"
+
+    for cmd in $(./toybox_vendor); do
+        ln -sf toybox_vendor "$cmd"
+    done
+
+    cd /
+
+fi
+
+
+echo -e "${BLUE}[*]${RESET} Installing linker configuration..."
+
+if [ -d "/linkerconfig" ]; then
+    cp -a /linkerconfig/* "$DIR/linkerconfig/" 2>/dev/null || true
+fi
+
+
+echo -e "${BLUE}[*]${RESET} Mounting kernel interfaces..."
+
+mount --bind /dev "$DIR/dev"
+mount --bind /proc "$DIR/proc"
+mount --bind /sys "$DIR/sys"
+
+
+echo -e "${BLUE}[*]${RESET} Creating properties..."
+
+cat > "$DIR/system/build.prop" <<EOF
 ro.product.model=generic_cli
-ro.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.000/7b7x3:eng/test-keys
-ro.cli.home=/root
-ro.build.version.sdk=1
-ro.build.version.release=lavacup
-ro.build.id=CUMN.261605.001
-ro.build.codename=Lavacup (lavacup)
+ro.product.name=generic_cli
+ro.product.device=generic_cli
+ro.build.version.sdk=$SDK
 ro.build.type=eng
 ro.build.tags=test-keys
-ro.github=rebangkkuser/androcli" > $DIR/system/build.prop
+ro.debuggable=1
+ro.secure=0
+ro.cli.home=/root
+ro.github=rebangkkuser/androcli
+EOF
 
-echo "# begin vendor build properties
-# made by bangkkuser
 
+cat > "$DIR/vendor/build.prop" <<EOF
 ro.vendor.product.model=generic_cli
-ro.vendor.product.build.fingerprint=generic_cli/generic/cligen/CUMN.261605.001/7b7x3:eng/test-keys
-ro.vendor.cli.home=/root
-ro.vendor.build.version.sdk=1
-ro.vendor.build.version.release=lavacup
-ro.vendor.build.id=CUMN.261605.001
-firstrel=1.5-acli
+ro.vendor.product.name=generic_cli
+ro.vendor.build.version.sdk=$SDK
 ro.vendor.build.type=eng
 ro.vendor.build.tags=test-keys
-ro.vendor.github=rebangkkuser/androcli" > $DIR/vendor/build.prop
+ro.vendor.github=rebangkkuser/androcli
+EOF
 
-echo "ro.secure=0
+
+cat > "$DIR/default.prop" <<EOF
+ro.secure=0
 ro.debuggable=1
-persist.sys.usb.config=adb" > $DIR/default.prop
+persist.sys.usb.config=adb
+EOF
 
-echo -e "${GREEN}[*]${RESET} Finished at ${BLUE}[$(date +%H:%M:%S)]${RESET}, on $(date +%d%m)"
+
+chmod -R 755 "$DIR/system/bin" 2>/dev/null || true
+chmod -R 755 "$DIR/vendor/bin" 2>/dev/null || true
+
+
+echo
+echo -e "${GREEN}[+]${RESET} AndroidCLI installation finished."
+echo -e "${GREEN}[+]${RESET} RootFS: $DIR"
+echo -e "${GREEN}[+]${RESET} Completed at $(date +%H:%M:%S)"
