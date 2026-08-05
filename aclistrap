@@ -153,17 +153,16 @@ cat > /data/local/bin/startacli <<'EOF'
 #!/system/bin/sh
 
 if [ "$(id -u)" != 0 ]; then
-    exec su -c "$0"
+    exec su -c "$0" "$@"
 fi
 
-env \
--i \
-chroot \
+env -i \
 HOME=/root \
 ACLI_VBP=/vendor/build.prop \
 ACLI_SBP=/system/build.prop \
 LOCALHOST=127.0.0.1 \
 PM=aclim \
+chroot \
 /data/local/androcli \
 /system/bin/sh
 EOF
