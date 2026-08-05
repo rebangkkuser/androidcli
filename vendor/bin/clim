@@ -1,37 +1,88 @@
 #!/system/bin/sh
 
-APP_BASE="/root/app"
+ROOT="/data/local/androcli"
+DB="$ROOT/var/lib/clim"
 
-cmd="$1"
-name="$2"
+mkdir -p "$DB"
 
-APP_DIR="$APP_BASE/$name"
-APP_FILE="$APP_DIR/app.acli"
+usage()
+{
+    echo "clim install <package>"
+    echo "clim remove <name>"
+    echo "clim list"
+    echo "clim info <name>"
+}
 
-case "$cmd" in
-  run)
-    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
-    sh "$APP_FILE"
-  ;;
 
-  info)
-    [ ! -f "$APP_FILE" ] && echo "App not found" && exit 1
-    echo "Name: $name"
-    echo "Path: $APP_BASE/$name"
-    head -n 20 "$APP_FILE"
-  ;;
+install()
+{
+    PKG="$1"
 
-  list)
-    ls "$APP_BASE"
-  ;;
+    mkdir -p /tmp/clim
 
-  uninstall)
-    [ ! -d "$APP_DIR" ] && echo "App not found" && exit 1
-    rm -rf "$APP_DIR"
-    echo "Removed $name"
-  ;;
+    tar -xf "$PKG" -C /tmp/clim
 
-  *)
-    echo "Usage: clim {run|info|list|uninstall}"
-  ;;
+    NAME=$(grep name /tmp/clim/package.prop | cut -d= -f2)
+
+    echo "Installing $NAME"
+
+    sh /tmp/clim/install.sh
+
+    mkdir -p "$DB/$NAME"
+
+    cp /tmp/clim/package.prop "$DB/$NAME/"
+}
+
+
+remove()
+{
+    NAME="$1"
+
+    if [ ! -d "$DB/$NAME" ]; then
+        echo "Package not installed"
+        exit 1
+    fi
+
+    if [ -f "$DB/$NAME/remove.sh" ]; then
+        sh "$DB/$NAME/remove.sh"
+    fi
+
+    rm -rf "$DB/$NAME"
+}
+
+
+list()
+{
+    ls "$DB"
+}
+
+
+info()
+{
+    cat "$DB/$1/package.prop"
+}
+
+
+case "$1" in
+
+install)
+    install "$2"
+;;
+
+remove)
+    remove "$2"
+;;
+
+list)
+    list
+;;
+
+info)
+    info "$2"
+;;
+
+*)
+    usage
+;;
+
 esac
