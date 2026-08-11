@@ -13,7 +13,7 @@ cd androidcli
 ```
 Execute the env.sh file
 ```sh
-chmod a+x env.sh && ./env.sh
+chmod a+x aclistrap.sh && ./aclistrap.sh
 ```
 Start with
 ```sh
